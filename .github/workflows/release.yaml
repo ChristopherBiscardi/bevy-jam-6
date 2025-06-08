@@ -28,9 +28,9 @@ env:
 
   # Whether to build and package a release for a given target platform.
   build_for_web: true
-  build_for_linux: true
-  build_for_windows: true
-  build_for_macos: true
+  build_for_linux: false
+  build_for_windows: false
+  build_for_macos: false
 
   # Whether to upload the packages produced by this workflow to a GitHub release.
   upload_to_github: true
@@ -209,7 +209,7 @@ jobs:
         run: |
           cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
-          bevy build --locked --release --features='${{ matrix.features }}' --yes web --bundle
+          RUSTFLAGS='--cfg getrandom_backend="wasm_js"' bevy build --locked --release --features='${{ matrix.features }}' --yes web --bundle
           mv 'target/bevy_web/web-release/${{ env.cargo_build_binary_name }}' '${{ env.app }}'
 
       - name: Build and add binaries to app (non-Web)
