@@ -148,43 +148,43 @@ fn start_playing(
     ));
 
     // Text with multiple sections
-    commands.spawn((
-    Node{
-        width: Val::Percent(100.),
-        height: Val::Percent(100.),
-        justify_content: JustifyContent::Center,
-        align_items: AlignItems::FlexEnd,
-        ..default()
-    },
-    children![(
-        Node {
-            padding: UiRect { bottom: Val::Px(100.),..default() },
-            ..default()
-        },
-        Text::new("Grounded: "),
-        TextColor(SLATE_50.into()),
-        TextFont {
-            // This font is loaded and will be used instead of the default font.
-            font: asset_server
-                .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
-            font_size: 42.0,
-            ..default()
-        },
-        children![
-            (
-                TextSpan::default(),
-                TextFont {
-                    // This font is loaded and will be used instead of the default font.
-                    font: asset_server
-                        .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
-                    font_size: 42.0,
-                    ..default()
-                },
-                GroundedText,
-            ),
-        ],
-    )]
-));
+    //     commands.spawn((
+    //     Node{
+    //         width: Val::Percent(100.),
+    //         height: Val::Percent(100.),
+    //         justify_content: JustifyContent::Center,
+    //         align_items: AlignItems::FlexEnd,
+    //         ..default()
+    //     },
+    //     children![(
+    //         Node {
+    //             padding: UiRect { bottom: Val::Px(100.),..default() },
+    //             ..default()
+    //         },
+    //         Text::new("Grounded: "),
+    //         TextColor(SLATE_50.into()),
+    //         TextFont {
+    //             // This font is loaded and will be used instead of the default font.
+    //             font: asset_server
+    //                 .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
+    //             font_size: 42.0,
+    //             ..default()
+    //         },
+    //         children![
+    //             (
+    //                 TextSpan::default(),
+    //                 TextFont {
+    //                     // This font is loaded and will be used instead of the default font.
+    //                     font: asset_server
+    //                         .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
+    //                     font_size: 42.0,
+    //                     ..default()
+    //                 },
+    //                 GroundedText,
+    //             ),
+    //         ],
+    //     )]
+    // ));
 
     info!("start playing");
     commands.spawn(DirectionalLight {
@@ -340,7 +340,7 @@ fn gravity(
             &ShapeHits,
             &Actions<Grounded>,
             &LastFrameVelocity,
-            &Transform,
+            // &Transform,
         ),
         With<Player>,
     >,
@@ -350,7 +350,7 @@ fn gravity(
         With<GroundedText>,
     >,
     mut shape_cast_grounded: ResMut<ShapeCastGrounded>,
-    mut gizmos: Gizmos,
+    // mut gizmos: Gizmos,
 ) {
     for (
         mut velocity,
@@ -358,14 +358,14 @@ fn gravity(
         shape_hits,
         actions,
         last_frame_velocity,
-        transform,
+        // transform,
     ) in &mut query
     {
-        gizmos.arrow(
-            transform.translation,
-            transform.translation + velocity.0,
-            SKY_400,
-        );
+        // gizmos.arrow(
+        //     transform.translation,
+        //     transform.translation + velocity.0,
+        //     SKY_400,
+        // );
         match shape_hits.iter().next() {
             Some(shape_hit_data) => {
                 // gizmos.arrow(
@@ -472,7 +472,7 @@ fn casting(
         // With<KinematicCharacterController>,
         With<Player>,
     >,
-    mut gizmos: Gizmos,
+    // mut gizmos: Gizmos,
     time: Res<Time>,
     obstacles: Query<Entity, With<Obstacle>>,
 ) {
@@ -493,10 +493,10 @@ fn casting(
             continue;
         };
 
-        let colors = [
-            RED_400, ORANGE_400, YELLOW_400, GREEN_400,
-            BLUE_400, INDIGO_400,
-        ];
+        // let colors = [
+        //     RED_400, ORANGE_400, YELLOW_400, GREEN_400,
+        //     BLUE_400, INDIGO_400,
+        // ];
         // print!("\ntry loop: ");
 
         let mut slide_accumulation = Vec3::ZERO;
@@ -509,9 +509,7 @@ fn casting(
 
         // info!(?current_velocity_magnitude);
 
-        'inner: for (i, color) in
-            colors.iter().enumerate().take(max_hits)
-        {
+        'inner: for i in 0..max_hits {
             // info!("{i}");
             let mut excluded_entities =
                 obstacles.iter().collect::<Vec<Entity>>();
@@ -544,29 +542,29 @@ fn casting(
             let first_hit_gizmo_position =
                 origin + first_hit.distance * direction;
 
-            gizmos.arrow(
-                first_hit_gizmo_position,
-                first_hit_gizmo_position
-                    + first_hit.normal1,
-                RED_400,
-            );
-            gizmos.primitive_3d(
-                &Capsule3d::new(0.5, 1.),
-                Isometry3d::from_translation(
-                    first_hit_gizmo_position,
-                ),
-                *color,
-            );
+            // gizmos.arrow(
+            //     first_hit_gizmo_position,
+            //     first_hit_gizmo_position
+            //         + first_hit.normal1,
+            //     RED_400,
+            // );
+            // gizmos.primitive_3d(
+            //     &Capsule3d::new(0.5, 1.),
+            //     Isometry3d::from_translation(
+            //         first_hit_gizmo_position,
+            //     ),
+            //     *color,
+            // );
 
             slide_accumulation +=
                 first_hit.distance * direction;
             // info!(?slide_accumulation, "add");
 
-            gizmos.arrow(
-                origin,
-                first_hit_gizmo_position,
-                *color,
-            );
+            // gizmos.arrow(
+            //     origin,
+            //     first_hit_gizmo_position,
+            //     *color,
+            // );
             // let used_velocity_percent =
             // first_hit.distance
             //     - current_velocity_magnitude;
@@ -577,11 +575,11 @@ fn casting(
                 * current_velocity_magnitude)
                 .cross(first_hit.normal1);
             // "up_down"
-            gizmos.arrow(
-                first_hit_gizmo_position,
-                first_hit_gizmo_position + up_down * 10.,
-                GREEN_400,
-            );
+            // gizmos.arrow(
+            //     first_hit_gizmo_position,
+            //     first_hit_gizmo_position + up_down * 10.,
+            //     GREEN_400,
+            // );
             new_direction =
                 first_hit.normal1.cross(up_down);
 
@@ -591,11 +589,11 @@ fn casting(
             //     *color,
             // );
 
-            gizmos.arrow(
-                first_hit_gizmo_position,
-                first_hit_gizmo_position + new_direction,
-                Color::BLACK,
-            );
+            // gizmos.arrow(
+            //     first_hit_gizmo_position,
+            //     first_hit_gizmo_position + new_direction,
+            //     Color::BLACK,
+            // );
 
             // this is the leftover velocity magnitude
             current_velocity_magnitude =
@@ -611,11 +609,11 @@ fn casting(
             direction = new_dir;
         }
 
-        gizmos.arrow(
-            position.0,
-            position.0 + slide_accumulation,
-            Color::WHITE,
-        );
+        // gizmos.arrow(
+        //     position.0,
+        //     position.0 + slide_accumulation,
+        //     Color::WHITE,
+        // );
 
         // info!(?slide_accumulation);
         // transform.translation +=
