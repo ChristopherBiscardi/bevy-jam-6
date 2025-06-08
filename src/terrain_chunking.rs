@@ -14,10 +14,7 @@ use bevy::{
     },
 };
 use noiz::prelude::*;
-use rand::{
-    prelude::Distribution,
-    thread_rng,
-};
+use rand::{prelude::Distribution, thread_rng};
 
 use crate::{AppState, playing::Player};
 
@@ -102,7 +99,7 @@ fn ensure_land_chunks(
     query: Single<&Transform, With<Player>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    images: ResMut<Assets<Image>>,
+    // images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     noise: Res<LandChunkNoise>,
     debug_material: Res<DebugMaterial>,

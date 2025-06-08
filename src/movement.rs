@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::PI,
-    ops::Neg,
-};
+use std::{f32::consts::PI, ops::Neg};
 
 use avian3d::prelude::LinearVelocity;
 use bevy::prelude::*;
@@ -62,8 +59,8 @@ fn apply_movement(
     mut players: Query<&mut LinearVelocity, With<Player>>,
     time: Res<Time>,
 ) {
-    let current_velocity =
-        players.get_mut(trigger.target()).unwrap().0;
+    // let current_velocity =
+    // players.get_mut(trigger.target()).unwrap().0;
 
     // info!(?current_velocity);
 

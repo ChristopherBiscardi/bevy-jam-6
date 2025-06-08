@@ -30,7 +30,10 @@ impl Plugin for PlayingPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (min_linear, gravity, casting)
+                (
+                    // min_linear,
+                    gravity, casting,
+                )
                     .run_if(in_state(AppState::Playing)),
             )
             .add_systems(
@@ -94,10 +97,10 @@ impl Default for HitstopTimer {
 fn start_playing(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    images: ResMut<Assets<Image>>,
+    // images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     noise: Res<LandChunkNoise>,
-    time: ResMut<Time<Virtual>>,
+    // time: ResMut<Time<Virtual>>,
     asset_server: Res<AssetServer>,
 ) {
     // time.set_relative_speed(0.02);
@@ -333,7 +336,7 @@ fn gravity(
     mut query: Query<
         (
             &mut LinearVelocity,
-            &ShapeCaster,
+            // &ShapeCaster,
             &ShapeHits,
             &Actions<Grounded>,
             &LastFrameVelocity,
@@ -351,7 +354,7 @@ fn gravity(
 ) {
     for (
         mut velocity,
-        shape_caster,
+        // shape_caster,
         shape_hits,
         actions,
         last_frame_velocity,
@@ -442,17 +445,17 @@ fn gravity(
     }
 }
 
-fn min_linear(
-    mut query: Query<&mut LinearVelocity>,
-    time: Res<Time>,
-) {
-    let delta_secs = time.delta_secs();
-    for linear_velocity in &mut query {
-        // Accelerate the entity towards +X at
-        // `2.0` units per second squared.
-        // linear_velocity.z = -30.;
-    }
-}
+// fn min_linear(
+//     mut query: Query<&mut LinearVelocity>,
+//     time: Res<Time>,
+// ) {
+//     // let delta_secs = time.delta_secs();
+//     // for linear_velocity in &mut query {
+//         // Accelerate the entity towards +X at
+//         // `2.0` units per second squared.
+//         // linear_velocity.z = -30.;
+//     }
+// }
 
 fn casting(
     spatial_query: SpatialQuery,
@@ -464,7 +467,7 @@ fn casting(
             // &DesiredDirection,
             // &KccVelocity,
             &mut LinearVelocity,
-            &mut Transform,
+            // &mut Transform,
         ),
         // With<KinematicCharacterController>,
         With<Player>,
@@ -479,7 +482,7 @@ fn casting(
         position,
         // desired_direction,
         mut linear_velocity,
-        transform,
+        // transform,
     ) in &mut characters
     {
         let max_hits = 5;
@@ -506,7 +509,9 @@ fn casting(
 
         // info!(?current_velocity_magnitude);
 
-        'inner: for i in 0..max_hits {
+        'inner: for (i, color) in
+            colors.iter().enumerate().take(max_hits)
+        {
             // info!("{i}");
             let mut excluded_entities =
                 obstacles.iter().collect::<Vec<Entity>>();
@@ -550,7 +555,7 @@ fn casting(
                 Isometry3d::from_translation(
                     first_hit_gizmo_position,
                 ),
-                colors[i],
+                *color,
             );
 
             slide_accumulation +=
@@ -560,7 +565,7 @@ fn casting(
             gizmos.arrow(
                 origin,
                 first_hit_gizmo_position,
-                colors[i],
+                *color,
             );
             // let used_velocity_percent =
             // first_hit.distance
@@ -583,7 +588,7 @@ fn casting(
             // gizmos.arrow(
             //     origin,
             //     first_hit_gizmo_position,
-            //     colors[i],
+            //     *color,
             // );
 
             gizmos.arrow(

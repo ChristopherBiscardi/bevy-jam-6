@@ -1,5 +1,4 @@
 use bevy::{
-    asset::UntypedAssetId,
     diagnostic::{
         DiagnosticsStore, FrameTimeDiagnosticsPlugin,
     },
@@ -47,8 +46,8 @@ impl Plugin for AppAssetsPlugin {
 
 #[derive(AssetCollection, Resource)]
 struct MiscAssets {
-    #[asset(path = "gltf/levels.glb")]
-    levels: Handle<Gltf>,
+    // #[asset(path = "gltf/levels.glb")]
+    // levels: Handle<Gltf>,
 }
 
 fn print_progress(
@@ -68,16 +67,6 @@ fn print_progress(
             progress
         );
     }
-}
-
-fn is_recursively_loaded(
-    handle: impl Into<UntypedAssetId>,
-    asset_server: &AssetServer,
-) -> bool {
-    asset_server
-        .get_recursive_dependency_load_state(handle)
-        .map(|state| state.is_loaded())
-        .unwrap_or(false)
 }
 
 const DURATION_LONG_TASK_IN_SECS: f64 = 0.2;
