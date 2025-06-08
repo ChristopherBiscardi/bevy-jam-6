@@ -1,19 +1,19 @@
 use avian3d::prelude::*;
 use bevy::{
     asset::{AssetMetaCheck, UntypedAssetId},
+    color::palettes::tailwind::*,
     core_pipeline::bloom::{
         Bloom, BloomCompositeMode, BloomPrefilter,
     },
     diagnostic::{
         DiagnosticsStore, FrameTimeDiagnosticsPlugin,
     },
-    ecs::spawn::SpawnWith,
+    ecs::{
+        error::{GLOBAL_ERROR_HANDLER, warn},
+        spawn::SpawnWith,
+    },
     prelude::*,
     scene::SceneInstanceReady,
-};
-use bevy::{
-    color::palettes::tailwind::*,
-    ecs::error::{GLOBAL_ERROR_HANDLER, warn},
 };
 use bevy_enhanced_input::EnhancedInputPlugin;
 use bevy_seedling::prelude::*;
@@ -31,13 +31,16 @@ fn main() {
     let mut app = App::new();
 
     app.insert_resource(ClearColor(SLATE_950.into()))
-        // .insert_resource(DefaultFriction(Friction::new(0.)))
+        // .insert_resource(DefaultFriction(Friction::new(0.
+        // )))
         .add_plugins((
             DefaultPlugins
                 // .set(AssetPlugin {
-                //     // Wasm builds will check for meta files (that don't exist) if this isn't set.
-                //     // This causes errors and even panics on web build on itch.
-                //     // See https://github.com/bevyengine/bevy_github_ci_template/issues/48.
+                //     // Wasm builds will check for meta
+                // files (that don't exist) if this isn't
+                // set.     // This causes
+                // errors and even panics on web build on
+                // itch.     // See https://github.com/bevyengine/bevy_github_ci_template/issues/48.
                 //     meta_check: AssetMetaCheck::Never,
                 //     ..default()
                 // })
@@ -100,9 +103,13 @@ fn update_button_color_on<E>(
 where
     E: std::fmt::Debug + Reflect + Clone,
 {
-    // An observer closure that accepts a Pointer Event and a Color. We do this to avoid needing to write four
-    // versions of this observer, each triggered by a different event and with a different hardcoded
-    // Event/Color. Instead, the event type is a generic, and the Event/Color is passed in.
+    // An observer closure that accepts a Pointer
+    // Event and a Color. We do this to avoid needing
+    // to write four versions of this observer,
+    // each triggered by a different event and with a
+    // different hardcoded Event/Color. Instead,
+    // the event type is a generic, and the
+    // Event/Color is passed in.
     move |trigger: Trigger<Pointer<E>>,
           buttons: Query<
         (),
@@ -166,8 +173,8 @@ fn spawn_main_menu(
             },
             ..default()
         },
-        // Projection::Orthographic(OrthographicProjection {
-        //     scaling_mode:
+        // Projection::Orthographic(OrthographicProjection
+        // {     scaling_mode:
         //         bevy::render::camera::ScalingMode::AutoMin {
         //             min_width: 1920.,
         //             min_height: 1080.,
@@ -286,8 +293,8 @@ fn main_menu_text_button(
 // ) {
 //     commands.spawn(SceneRoot(
 //         asset_server.load(
-//             // Change this to your exported gltf file
-//             GltfAssetLabel::Scene(0)
+//             // Change this to your exported
+// gltf file             GltfAssetLabel::Scene(0)
 //                 .from_asset("gltf/levels.glb"),
 //         ),
 //     ));

@@ -55,7 +55,8 @@ fn bind_actions(
         .to((KeyCode::Space, GamepadButton::South));
 }
 
-/// Apply movement when `Move` action considered fired.
+/// Apply movement when `Move` action considered
+/// fired.
 fn apply_movement(
     trigger: Trigger<Fired<Move>>,
     mut players: Query<&mut LinearVelocity, With<Player>>,

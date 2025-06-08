@@ -29,9 +29,10 @@ pub struct LandChunkPlugin;
 impl Plugin for LandChunkPlugin {
     fn build(&self, app: &mut App) {
         let mut perlin_noise = Noise::<(
-            // mixes gradients from `QuickGradients` (a lookup table)
-            // across each cell via a smoothstep,
-            // where each cell is on an orthogonal (cartesian) grid,
+            // mixes gradients from `QuickGradients` (a
+            // lookup table) across each cell
+            // via a smoothstep, where each
+            // cell is on an orthogonal (cartesian) grid,
             MixCellGradients<
                 OrthoGrid,
                 Smoothstep,
@@ -77,9 +78,10 @@ pub struct LandChunk;
 #[derive(Resource, Deref, DerefMut)]
 pub struct LandChunkNoise(
     Noise<(
-        // mixes gradients from `QuickGradients` (a lookup table)
-        // across each cell via a smoothstep,
-        // where each cell is on an orthogonal (cartesian) grid,
+        // mixes gradients from `QuickGradients` (a lookup
+        // table) across each cell via a
+        // smoothstep, where each cell is on an
+        // orthogonal (cartesian) grid,
         MixCellGradients<
             OrthoGrid,
             Smoothstep,
@@ -229,8 +231,8 @@ fn gen_land_chunk(
     // (
     plane.compute_smooth_normals();
     plane
-    //     Collider::heightfield(heights, Vec3::ONE),
-    // )
+    //     Collider::heightfield(heights,
+    // Vec3::ONE), )
 }
 
 /// Creates a colorful test pattern

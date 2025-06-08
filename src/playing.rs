@@ -1,22 +1,25 @@
 use avian3d::prelude::*;
 use bevy::{
-    color::palettes::tailwind::*, pbr::light_consts::lux, prelude::*
+    color::palettes::tailwind::*, pbr::light_consts::lux,
+    prelude::*,
 };
 use bevy_enhanced_input::prelude::*;
 use noiz::prelude::*;
 
 use crate::{
-    movement::{FastFall, Grounded}, terrain_chunking::{LandChunkNoise, Obstacle, TERRAIN_AMPLITUDE}, AppState
+    AppState,
+    movement::{FastFall, Grounded},
+    terrain_chunking::{
+        LandChunkNoise, Obstacle, TERRAIN_AMPLITUDE,
+    },
 };
 
 pub struct PlayingPlugin;
 
 impl Plugin for PlayingPlugin {
     fn build(&self, app: &mut App) {
-      
-        app
-        .init_resource::<ShapeCastGrounded>()
-        .init_resource::<HitstopTimer>()
+        app.init_resource::<ShapeCastGrounded>()
+            .init_resource::<HitstopTimer>()
             .add_systems(
                 OnEnter(AppState::Playing),
                 start_playing,
@@ -27,27 +30,36 @@ impl Plugin for PlayingPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (min_linear, gravity, casting).run_if(in_state(AppState::Playing)),
+                (min_linear, gravity, casting)
+                    .run_if(in_state(AppState::Playing)),
             )
             .add_systems(
                 Update,
-                (camera_follow, debug_side_camera_follow,update_speed_text,tick_hitstop).run_if(in_state(AppState::Playing)),
+                (
+                    camera_follow,
+                    debug_side_camera_follow,
+                    update_speed_text,
+                    tick_hitstop,
+                )
+                    .run_if(in_state(AppState::Playing)),
             )
             .add_systems(
                 PhysicsSchedule,
-                update_previous_velocity.in_set(PhysicsStepSet::First),
+                update_previous_velocity
+                    .in_set(PhysicsStepSet::First),
             );
-            
     }
 }
 
 fn update_previous_velocity(
-   mut query: Query<(&LinearVelocity, &mut LastFrameVelocity)>,
-
+    mut query: Query<(
+        &LinearVelocity,
+        &mut LastFrameVelocity,
+    )>,
 ) {
     for (velocity, mut last_frame_velocity) in &mut query {
-    last_frame_velocity.0 = velocity.0;
-        }
+        last_frame_velocity.0 = velocity.0;
+    }
 }
 
 #[derive(Component)]
@@ -72,7 +84,10 @@ impl Default for HitstopTimer {
     fn default() -> Self {
         // 0.02 is the slowdown virtual time
         // 0.020 is the "realtime" timer time
-        Self(Timer::from_seconds(0.01, TimerMode::Once))
+        Self(Timer::from_seconds(
+            0.01,
+            TimerMode::Once,
+        ))
     }
 }
 
@@ -130,8 +145,8 @@ fn start_playing(
         )]
     ));
 
-  // Text with multiple sections
-  commands.spawn((
+    // Text with multiple sections
+    commands.spawn((
     Node{
         width: Val::Percent(100.),
         height: Val::Percent(100.),
@@ -171,21 +186,22 @@ fn start_playing(
     )]
 ));
 
-
     info!("start playing");
     commands.spawn(DirectionalLight {
         shadows_enabled: true,
-        // lux::RAW_SUNLIGHT is recommended for use with this feature, since
-        // other values approximate sunlight *post-scattering* in various
-        // conditions. RAW_SUNLIGHT in comparison is the illuminance of the
-        // sun unfiltered by the atmosphere, so it is the proper input for
+        // lux::RAW_SUNLIGHT is recommended for use with
+        // this feature, since other values
+        // approximate sunlight *post-scattering* in various
+        // conditions. RAW_SUNLIGHT in comparison is the
+        // illuminance of the sun unfiltered by the
+        // atmosphere, so it is the proper input for
         // sunlight to be filtered by the atmosphere.
         illuminance: lux::RAW_SUNLIGHT,
         ..default()
     });
 
     // for i in 0..40 {
-      
+
     // }
 
     let player_position: f32 = noise.sample(Vec3::ZERO);
@@ -198,12 +214,12 @@ fn start_playing(
             TransformInterpolation,
             Actions::<Grounded>::default(),
             Mesh3d(meshes.add(Capsule3d::new(0.5, 1.))),
-            MeshMaterial3d(
-                materials.add(StandardMaterial{
+            MeshMaterial3d(materials.add(
+                StandardMaterial {
                     base_color: SLATE_400.into(),
                     ..default()
-                }),
-            ),
+                },
+            )),
             Transform::from_xyz(
                 0.,
                 player_position * TERRAIN_AMPLITUDE + 1.,
@@ -231,23 +247,28 @@ fn start_playing(
             )
             .with_max_distance(0.2),
         ))
-        .observe(|
-            trigger: Trigger<OnCollisionStart>,
-            obstacles: Query<&Obstacle>,
-            mut time: ResMut<Time<Virtual>>,
-            mut hitstop_timer: ResMut<HitstopTimer>,
-            mut commands: Commands
-            | {
+        .observe(
+            |trigger: Trigger<OnCollisionStart>,
+             obstacles: Query<&Obstacle>,
+             mut time: ResMut<Time<Virtual>>,
+             mut hitstop_timer: ResMut<HitstopTimer>,
+             mut commands: Commands| {
                 if obstacles.get(trigger.collider).is_ok() {
                     info!("colliding");
                     // info!(event=?trigger.event());
-                    // start with double `Virtual` time resulting in one of the sprites moving at twice the speed
-                    // of the other sprite which moves based on `Real` (unscaled) time
+                    // start with double `Virtual` time
+                    // resulting in one of the sprites
+                    // moving at twice the speed
+                    // of the other sprite which moves based
+                    // on `Real` (unscaled) time
                     time.set_relative_speed(0.02);
                     *hitstop_timer = Default::default();
-                    commands.entity(trigger.collider).despawn();
+                    commands
+                        .entity(trigger.collider)
+                        .despawn();
                 }
-        });
+            },
+        );
 }
 
 fn tick_hitstop(
@@ -262,7 +283,6 @@ fn tick_hitstop(
 }
 
 fn stop_playing() {}
-
 
 #[derive(Component)]
 pub struct PlayerFollowCamera;
@@ -325,18 +345,26 @@ fn gravity(
         With<Player>,
     >,
     time: Res<Time>,
-    mut grounded_text: Query<&mut TextSpan, With<GroundedText>>,
+    mut grounded_text: Query<
+        &mut TextSpan,
+        With<GroundedText>,
+    >,
     mut shape_cast_grounded: ResMut<ShapeCastGrounded>,
     mut gizmos: Gizmos,
 ) {
-    for (mut velocity, shape_caster, shape_hits, actions, last_frame_velocity, transform) in
-        &mut query
+    for (
+        mut velocity,
+        shape_caster,
+        shape_hits,
+        actions,
+        last_frame_velocity,
+        transform,
+    ) in &mut query
     {
         gizmos.arrow(
             transform.translation,
-            transform.translation
-                + velocity.0,
-            SKY_400
+            transform.translation + velocity.0,
+            SKY_400,
         );
         match shape_hits.iter().next() {
             Some(shape_hit_data) => {
@@ -346,7 +374,7 @@ fn gravity(
                 //         + shape_hit_data.normal1 * 5.,
                 //     SKY_400
                 // );
-                
+
                 // info!(?shape_hit_data);
                 // don't apply gravity
                 for mut text in &mut grounded_text {
@@ -358,13 +386,19 @@ fn gravity(
                 // .normalize()
                 if shape_cast_grounded.0 == false {
                     info!(?velocity, ?last_frame_velocity);
-                    let tangent = shape_hit_data.normal1.cross(Vec3::X);
-                    // let angle = shape_hit_data.normal1.dot(velocity.0.normalize());
-                    let angle_2 = tangent.dot(last_frame_velocity.0.normalize());
+                    let tangent = shape_hit_data
+                        .normal1
+                        .cross(Vec3::X);
+                    // let angle =
+                    // shape_hit_data.normal1.dot(velocity.
+                    // 0.normalize());
+                    let angle_2 = tangent.dot(
+                        last_frame_velocity.0.normalize(),
+                    );
 
                     if angle_2 > 0.99 {
                         info!("perfect");
-                    } else if angle_2 >0.98 {
+                    } else if angle_2 > 0.98 {
                         info!("good");
                     } else if angle_2 > 0.95 {
                         info!("ok");
@@ -375,10 +409,12 @@ fn gravity(
                     // gizmos.arrow(
                     //     shape_hit_data.point1,
                     //     shape_hit_data.point1
-                    //         + shape_hit_data.normal1 * 5.,
+                    //         + shape_hit_data.
+                    //           normal1 * 5.,
                     //     SKY_400
                     // );
-                    // info!(angle=?angle.to_degrees());
+                    // info!(angle=?angle.
+                    // to_degrees());
                     // cos(90deg) == 0
                     // angle.to_degrees()
                 }
@@ -415,7 +451,8 @@ fn min_linear(
 ) {
     let delta_secs = time.delta_secs();
     for mut linear_velocity in &mut query {
-        // Accelerate the entity towards +X at `2.0` units per second squared.
+        // Accelerate the entity towards +X at
+        // `2.0` units per second squared.
         // linear_velocity.z = -30.;
     }
 }
@@ -437,7 +474,7 @@ fn casting(
     >,
     mut gizmos: Gizmos,
     time: Res<Time>,
-    obstacles: Query<Entity, With<Obstacle>>
+    obstacles: Query<Entity, With<Obstacle>>,
 ) {
     for (
         entity,
@@ -474,7 +511,8 @@ fn casting(
 
         'inner: for i in 0..max_hits {
             // info!("{i}");
-            let mut excluded_entities = obstacles.iter().collect::<Vec<Entity>>();
+            let mut excluded_entities =
+                obstacles.iter().collect::<Vec<Entity>>();
             excluded_entities.push(entity);
             // Cast shape and print first hit
             let Some(first_hit) = spatial_query.cast_shape(
@@ -486,7 +524,9 @@ fn casting(
                     current_velocity_magnitude,
                 ),
                 &SpatialQueryFilter::default()
-                    .with_excluded_entities(excluded_entities),
+                    .with_excluded_entities(
+                        excluded_entities,
+                    ),
             ) else {
                 if i == 0 {
                     slide_accumulation = linear_velocity.0
@@ -525,7 +565,8 @@ fn casting(
                 first_hit_gizmo_position,
                 colors[i],
             );
-            // let used_velocity_percent = first_hit.distance
+            // let used_velocity_percent =
+            // first_hit.distance
             //     - current_velocity_magnitude;
 
             let up_down = ((first_hit_gizmo_position
@@ -576,12 +617,14 @@ fn casting(
 
         // info!(?slide_accumulation);
         // transform.translation +=
-        //     slide_accumulation * time.delta_secs() * 30.;
-        // **linear_velocity += slide_accumulation;
+        //     slide_accumulation * time.delta_secs() *
+        // 30.; **linear_velocity +=
+        // slide_accumulation;
 
         let Ok(slide_dir) = Dir3::new(slide_accumulation)
         else {
-            // invalid slide_dir means we're going to fall through the map
+            // invalid slide_dir means we're going to fall
+            // through the map
             info!("invalid slide_dir");
             continue;
         };
@@ -590,14 +633,16 @@ fn casting(
     }
 }
 
-fn update_speed_text(player: Single<&LinearVelocity, With<Player>>,
-mut    speed_texts: Query<&mut TextSpan, With<SpeedText>>
-){
+fn update_speed_text(
+    player: Single<&LinearVelocity, With<Player>>,
+    mut speed_texts: Query<&mut TextSpan, With<SpeedText>>,
+) {
     for mut text in &mut speed_texts {
         text.0 = (player.length() as u32).to_string();
     }
 }
 
-// fn shape_cast_grounded(mut shape_cast_grounded: ResMut<ShapeCastGrounded>) {
+// fn shape_cast_grounded(mut shape_cast_grounded:
+// ResMut<ShapeCastGrounded>) {
 
 // }
