@@ -140,7 +140,6 @@ fn start_playing(
                         ..default()
                     }
                 )
-            
             ],
         )]
     ));
@@ -180,8 +179,6 @@ fn start_playing(
                 },
                 GroundedText,
             ),
-           
-        
         ],
     )]
 ));
