@@ -83,6 +83,11 @@ dev_native = [
 # [target.wasm32-unknown-unknown.dependencies]
 # getrandom = { version = "0.3", features = ["wasm_js"] }
 
+
+[package.metadata.bevy_cli.release]
+# Disable dev features for release builds.
+default-features = false
+
 [package.metadata.bevy_cli.web.dev]
 features = ["dev"]
 
