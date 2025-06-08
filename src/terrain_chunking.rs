@@ -15,7 +15,7 @@ use bevy::{
 };
 use noiz::prelude::*;
 use rand::{
-    SeedableRng, prelude::Distribution, rngs::StdRng,
+    prelude::Distribution,
     thread_rng,
 };
 
@@ -102,7 +102,7 @@ fn ensure_land_chunks(
     query: Single<&Transform, With<Player>>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut images: ResMut<Assets<Image>>,
+    images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     noise: Res<LandChunkNoise>,
     debug_material: Res<DebugMaterial>,
@@ -122,7 +122,7 @@ fn ensure_land_chunks(
             let sampler =
                 UniformMeshSampler::try_new(triangles)
                     .unwrap();
-            let mut rng = thread_rng();
+            let rng = thread_rng();
             // let rng = StdRng::;
             let samples: Vec<Vec3> =
                 sampler.sample_iter(rng).take(2).collect();

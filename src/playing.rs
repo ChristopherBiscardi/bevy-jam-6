@@ -94,10 +94,10 @@ impl Default for HitstopTimer {
 fn start_playing(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut images: ResMut<Assets<Image>>,
+    images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     noise: Res<LandChunkNoise>,
-    mut time: ResMut<Time<Virtual>>,
+    time: ResMut<Time<Virtual>>,
     asset_server: Res<AssetServer>,
 ) {
     // time.set_relative_speed(0.02);
@@ -381,7 +381,7 @@ fn gravity(
                 // shape_hit_data.normal1;
 
                 // .normalize()
-                if shape_cast_grounded.0 == false {
+                if !shape_cast_grounded.0 {
                     info!(?velocity, ?last_frame_velocity);
                     let tangent = shape_hit_data
                         .normal1
@@ -447,7 +447,7 @@ fn min_linear(
     time: Res<Time>,
 ) {
     let delta_secs = time.delta_secs();
-    for mut linear_velocity in &mut query {
+    for linear_velocity in &mut query {
         // Accelerate the entity towards +X at
         // `2.0` units per second squared.
         // linear_velocity.z = -30.;
@@ -479,11 +479,11 @@ fn casting(
         position,
         // desired_direction,
         mut linear_velocity,
-        mut transform,
+        transform,
     ) in &mut characters
     {
         let max_hits = 5;
-        let mut origin: Vec3 = position.0.clone();
+        let mut origin: Vec3 = position.0;
         let Ok(mut direction) =
             Dir3::new(linear_velocity.0)
         else {
@@ -513,7 +513,7 @@ fn casting(
             excluded_entities.push(entity);
             // Cast shape and print first hit
             let Some(first_hit) = spatial_query.cast_shape(
-                &collider,
+                collider,
                 origin,
                 Quat::default(),
                 direction,

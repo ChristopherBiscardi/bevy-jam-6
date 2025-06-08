@@ -1,27 +1,20 @@
 use avian3d::prelude::*;
 use bevy::{
-    asset::{AssetMetaCheck, UntypedAssetId},
     color::palettes::tailwind::*,
     core_pipeline::bloom::{
         Bloom, BloomCompositeMode, BloomPrefilter,
-    },
-    diagnostic::{
-        DiagnosticsStore, FrameTimeDiagnosticsPlugin,
     },
     ecs::{
         error::{GLOBAL_ERROR_HANDLER, warn},
         spawn::SpawnWith,
     },
     prelude::*,
-    scene::SceneInstanceReady,
 };
 use bevy_enhanced_input::EnhancedInputPlugin;
 use bevy_seedling::prelude::*;
 use bevy_skein::SkeinPlugin;
-use scaffolding::*;
-use vleue_kinetoscope::{
-    AnimatedImageController, AnimatedImagePlugin,
-};
+use landing::*;
+use vleue_kinetoscope::AnimatedImagePlugin;
 
 fn main() {
     GLOBAL_ERROR_HANDLER.set(warn).expect(
@@ -281,7 +274,7 @@ fn main_menu_text_button(
         children![(
             Text::new(text),
             TextFont {
-                font: font,
+                font,
                 ..default()
             }
         )],
@@ -300,7 +293,7 @@ fn main_menu_text_button(
 //     ));
 // }
 
-fn render_description(mut commands: Commands) {
+fn render_description(commands: Commands) {
     // commands.spawn(Camera2d);
 }
 
