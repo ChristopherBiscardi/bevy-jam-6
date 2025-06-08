@@ -252,7 +252,11 @@ fn start_playing(
              obstacles: Query<&Obstacle>,
              mut time: ResMut<Time<Virtual>>,
              mut hitstop_timer: ResMut<HitstopTimer>,
-             mut commands: Commands| {
+             mut commands: Commands,
+             mut velocity: Single<
+                &mut LinearVelocity,
+                With<Player>,
+            >| {
                 if obstacles.get(trigger.collider).is_ok() {
                     info!("colliding");
                     // info!(event=?trigger.event());
@@ -266,6 +270,8 @@ fn start_playing(
                     commands
                         .entity(trigger.collider)
                         .despawn();
+
+                    velocity.0 *= 0.75;
                 }
             },
         );

@@ -1,2 +1,2 @@
 watch:
-    RUSTFLAGS='--cfg getrandom_backend="wasm_js"' bevy run web
+    RUSTFLAGS='--cfg getrandom_backend="wasm_js"' bevy run --release web
