@@ -61,10 +61,6 @@ fn main() {
             terrain_chunking::LandChunkPlugin,
         ))
         .init_state::<AppState>()
-        .add_systems(
-            OnEnter(AppState::AssetLoading),
-            render_description,
-        )
         .add_systems(OnEnter(AppState::Next), expect)
         .add_systems(
             OnEnter(AppState::MainMenu),
@@ -273,10 +269,7 @@ fn main_menu_text_button(
         },
         children![(
             Text::new(text),
-            TextFont {
-                font,
-                ..default()
-            }
+            TextFont { font, ..default() }
         )],
     )
 }
@@ -292,9 +285,5 @@ fn main_menu_text_button(
 //         ),
 //     ));
 // }
-
-fn render_description(commands: Commands) {
-    // commands.spawn(Camera2d);
-}
 
 fn expect() {}
