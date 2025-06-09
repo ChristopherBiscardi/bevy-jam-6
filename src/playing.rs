@@ -20,6 +20,8 @@ impl Plugin for PlayingPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ShapeCastGrounded>()
             .init_resource::<HitstopTimer>()
+            .init_resource::<Lives>()
+            .init_resource::<HighSpeed>()
             .add_systems(
                 OnEnter(AppState::Playing),
                 start_playing,
@@ -51,6 +53,15 @@ impl Plugin for PlayingPlugin {
                 update_previous_velocity
                     .in_set(PhysicsStepSet::First),
             );
+    }
+}
+
+#[derive(Resource)]
+struct Lives(u32);
+
+impl Default for Lives {
+    fn default() -> Self {
+        Self(3)
     }
 }
 
@@ -152,32 +163,37 @@ fn start_playing(
     //     Node{
     //         width: Val::Percent(100.),
     //         height: Val::Percent(100.),
-    //         justify_content: JustifyContent::Center,
+    //         justify_content:
+    // JustifyContent::Center,
     //         align_items: AlignItems::FlexEnd,
     //         ..default()
     //     },
     //     children![(
     //         Node {
-    //             padding: UiRect { bottom: Val::Px(100.),..default() },
-    //             ..default()
-    //         },
+    //             padding: UiRect { bottom:
+    // Val::Px(100.),..default() },             
+    // ..default()         },
     //         Text::new("Grounded: "),
     //         TextColor(SLATE_50.into()),
     //         TextFont {
-    //             // This font is loaded and will be used instead of the default font.
+    //             // This font is loaded and will be
+    // used instead of the default font.
     //             font: asset_server
-    //                 .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
-    //             font_size: 42.0,
+    //                 
+    // .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.
+    // ttf"),             font_size: 42.0,
     //             ..default()
     //         },
     //         children![
     //             (
     //                 TextSpan::default(),
     //                 TextFont {
-    //                     // This font is loaded and will be used instead of the default font.
+    //                     // This font is loaded and
+    // will be used instead of the default font.
     //                     font: asset_server
-    //                         .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
-    //                     font_size: 42.0,
+    //                         
+    // .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.
+    // ttf"),                     font_size: 42.0,
     //                     ..default()
     //                 },
     //                 GroundedText,
@@ -256,6 +272,10 @@ fn start_playing(
              mut velocity: Single<
                 &mut LinearVelocity,
                 With<Player>,
+            >,
+             mut lives: ResMut<Lives>,
+             mut next_state: ResMut<
+                NextState<AppState>,
             >| {
                 if obstacles.get(trigger.collider).is_ok() {
                     info!("colliding");
@@ -272,6 +292,16 @@ fn start_playing(
                         .despawn();
 
                     velocity.0 *= 0.75;
+                    match lives.0.checked_sub(1) {
+                        Some(new_lives) => {
+                            lives.0 = new_lives;
+                        }
+                        None => {
+                            // game over
+                            next_state
+                                .set(AppState::MainMenu);
+                        }
+                    }
                 }
             },
         );
@@ -639,12 +669,29 @@ fn casting(
     }
 }
 
+#[derive(Resource, Default)]
+pub struct HighSpeed(pub f32);
+
+#[derive(Component)]
+pub struct HighSpeedText;
+
 fn update_speed_text(
     player: Single<&LinearVelocity, With<Player>>,
     mut speed_texts: Query<&mut TextSpan, With<SpeedText>>,
+    mut high_speed: ResMut<HighSpeed>,
+    mut high_speed_texts: Query<
+        &mut TextSpan,
+        (With<HighSpeedText>, Without<SpeedText>),
+    >,
 ) {
     for mut text in &mut speed_texts {
         text.0 = (player.length() as u32).to_string();
+    }
+    if player.length() > high_speed.0 {
+        high_speed.0 = player.length();
+        for mut text in &mut high_speed_texts {
+            text.0 = (high_speed.0 as u32).to_string();
+        }
     }
 }
 

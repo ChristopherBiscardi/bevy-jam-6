@@ -9,12 +9,12 @@ impl Plugin for DevToolsPlugin {
     fn build(&self, app: &mut App) {
         app
             // .add_plugins(EguiPlugin {
-            //     enable_multipass_for_primary_context: true,
-            // })
+            //     enable_multipass_for_primary_context:
+            // true, })
             // .add_plugins(
             //     WorldInspectorPlugin::default().run_if(
-            //         input_toggle_active(true, KeyCode::Escape),
-            //     ),
+            //         input_toggle_active(true,
+            // KeyCode::Escape),     ),
             // )
             .add_systems(
                 Update,

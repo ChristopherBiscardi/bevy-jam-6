@@ -61,6 +61,7 @@ fn main() {
             terrain_chunking::LandChunkPlugin,
         ))
         .init_state::<AppState>()
+        .add_systems(Startup, spawn_camera)
         .add_systems(OnEnter(AppState::Next), expect)
         .add_systems(
             OnEnter(AppState::MainMenu),
@@ -122,13 +123,8 @@ where
         }
     }
 }
-fn spawn_main_menu(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-    // commands.spawn(AnimatedImageController::play(
-    //     asset_server.load("video/bevy.webp"),
-    // ));
+
+fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         playing::PlayerFollowCamera,
         TransformInterpolation,
@@ -171,6 +167,62 @@ fn spawn_main_menu(
         //     ..OrthographicProjection::default_2d()
         // }),
     ));
+}
+fn spawn_main_menu(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    high_score: Res<playing::HighSpeed>,
+    mut time: ResMut<Time<Virtual>>,
+) {
+    time.set_relative_speed(1.);
+    // commands.spawn(AnimatedImageController::play(
+    //     asset_server.load("video/bevy.webp"),
+    // ));
+    // commands.spawn((
+    //     playing::PlayerFollowCamera,
+    //     TransformInterpolation,
+    //     Camera3d::default(),
+    //     Camera {
+    //         hdr: true,
+    //         ..default()
+    //     },
+    //     Bloom {
+    //         intensity: 0.05,
+    //         low_frequency_boost: 0.7,
+    //         low_frequency_boost_curvature: 0.95,
+    //         high_pass_frequency: 1.0,
+    //         prefilter: BloomPrefilter {
+    //             threshold: 0.0,
+    //             threshold_softness: 0.0,
+    //         },
+    //         composite_mode:
+    //
+    // BloomCompositeMode::EnergyConserving,
+    //         max_mip_dimension: 512,
+    //         scale: Vec2::ONE,
+    //     },
+    //     Transform::from_xyz(0., 3., 4.)
+    //         .looking_at(Vec3::ZERO, Vec3::Y),
+    //     DistanceFog {
+    //         // color: Color::srgb(0.25, 0.0, 0.25),
+    //         color: SLATE_950.into(),
+    //         falloff: FogFalloff::Linear {
+    //             start: 100.0,
+    //             end: 300.0,
+    //         },
+    //         ..default()
+    //     },
+    //     // Projection::Orthographic(OrthographicProjection
+    //     // {     scaling_mode:
+    //     //
+    // bevy::render::camera::ScalingMode::AutoMin {
+    //     //             min_width: 1920.,
+    //     //             min_height: 1080.,
+    //     //         },
+    //     //
+    // ..OrthographicProjection::default_2d()
+    //     // }),
+    // ));
     // commands.spawn((
     //     playing::PlayerFollowCameraDebug,
     //     Camera3d::default(),
@@ -185,7 +237,7 @@ fn spawn_main_menu(
         "fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf",
     );
     let font_one = font.clone();
-    // let font_two = font.clone();
+    let font_two = font.clone();
     // let font_three = font.clone();
     commands.spawn((
         StateScoped(AppState::MainMenu),
@@ -221,6 +273,46 @@ fn spawn_main_menu(
                             },
                         );
                 }),
+                Spawn((
+                    Name::new("High Speed Display".to_string()),
+                    Button,
+                    MainMenuButton,
+                    Node {
+                        padding: UiRect::axes(
+                            Val::Px(15.),
+                            Val::Px(5.),
+                        ),
+                        ..default()
+                    },
+                    children![(
+                        Text::new("High Speed: "),
+                        TextFont { font: font_two, font_size: 20., ..default() },
+                        children![
+                            (
+                                TextSpan::new(high_score.0.to_string()),
+                                TextFont {
+                                    // This font is loaded and will be used instead of the default font.
+                                    font: asset_server
+                                        .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
+                                    font_size: 20.0,
+                                    ..default()
+                                },
+                                playing::HighSpeedText,
+                            ),
+                            (
+                                TextSpan::new(" m/s"),
+                                TextFont {
+                                    // This font is loaded and will be used instead of the default font.
+                                    font: asset_server
+                                        .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.ttf"),
+                                    font_size: 12.0,
+                                    ..default()
+                                }
+                            )
+                        ]
+                    )],
+                ))
+
                 // SpawnWith(|parent: &mut ChildSpawner| {
                 //     parent.spawn(main_menu_text_button(
                 //         "Options", font_two,
