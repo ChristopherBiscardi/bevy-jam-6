@@ -238,7 +238,8 @@ fn spawn_main_menu(
     );
     let font_one = font.clone();
     let font_two = font.clone();
-    // let font_three = font.clone();
+    let font_three = font.clone();
+    let font_four = font.clone();
     commands.spawn((
         StateScoped(AppState::MainMenu),
         Node {
@@ -311,31 +312,30 @@ fn spawn_main_menu(
                             )
                         ]
                     )],
-                ))
-
-                // SpawnWith(|parent: &mut ChildSpawner| {
-                //     parent.spawn(main_menu_text_button(
-                //         "Options", font_two,
-                //     ));
-                // }),
-                // SpawnWith(|parent: &mut ChildSpawner| {
-                //     parent
-                //         .spawn(main_menu_text_button(
-                //             "Quit", font_three,
-                //         ))
-                //         .observe(
-                //             |_trigger: Trigger<
-                //                 Pointer<Click>,
-                //             >,
-                //              mut app_exit: EventWriter<
-                //                 AppExit,
-                //             >| {
-                //                 app_exit.write(
-                //                     AppExit::Success,
-                //                 );
-                //             },
-                //         );
-                // })
+                )),
+                SpawnWith(|parent: &mut ChildSpawner| {
+                    parent.spawn(main_menu_text_button(
+                        "Options", font_three,
+                    ));
+                }),
+                SpawnWith(|parent: &mut ChildSpawner| {
+                    parent
+                        .spawn(main_menu_text_button(
+                            "Quit", font_four,
+                        ))
+                        .observe(
+                            |_trigger: Trigger<
+                                Pointer<Click>,
+                            >,
+                             mut app_exit: EventWriter<
+                                AppExit,
+                            >| {
+                                app_exit.write(
+                                    AppExit::Success,
+                                );
+                            },
+                        );
+                })
             ))
         )],
     ));

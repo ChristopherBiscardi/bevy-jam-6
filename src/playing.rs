@@ -171,7 +171,7 @@ fn start_playing(
     //     children![(
     //         Node {
     //             padding: UiRect { bottom:
-    // Val::Px(100.),..default() },             
+    // Val::Px(100.),..default() },
     // ..default()         },
     //         Text::new("Grounded: "),
     //         TextColor(SLATE_50.into()),
@@ -179,7 +179,7 @@ fn start_playing(
     //             // This font is loaded and will be
     // used instead of the default font.
     //             font: asset_server
-    //                 
+    //
     // .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.
     // ttf"),             font_size: 42.0,
     //             ..default()
@@ -191,7 +191,7 @@ fn start_playing(
     //                     // This font is loaded and
     // will be used instead of the default font.
     //                     font: asset_server
-    //                         
+    //
     // .load("fonts/Alfa_Slab_One/AlfaSlabOne-Regular.
     // ttf"),                     font_size: 42.0,
     //                     ..default()
@@ -212,7 +212,7 @@ fn start_playing(
         // illuminance of the sun unfiltered by the
         // atmosphere, so it is the proper input for
         // sunlight to be filtered by the atmosphere.
-        illuminance: lux::RAW_SUNLIGHT,
+        // illuminance: lux::RAW_SUNLIGHT,
         ..default()
     });
 
@@ -387,6 +387,7 @@ fn gravity(
     >,
     mut shape_cast_grounded: ResMut<ShapeCastGrounded>,
     // mut gizmos: Gizmos,
+    mut accumulated_downward_velocity: Local<f32>,
 ) {
     for (
         mut velocity,
@@ -421,7 +422,7 @@ fn gravity(
 
                 // .normalize()
                 if !shape_cast_grounded.0 {
-                    info!(?velocity, ?last_frame_velocity);
+                    // info!(?velocity, ?last_frame_velocity);
                     let tangent = shape_hit_data
                         .normal1
                         .cross(Vec3::X);
@@ -468,9 +469,15 @@ fn gravity(
                     velocity.y -=
                         9.8 * 7. * time.delta_secs();
                 } else {
+                    // if *accumulated_downward_velocity < 0. {
+                    //     velocity.y -=
+                    //         *accumulated_downward_velocity;
+                    // }
                     // apply gravity
                     velocity.y -=
                         9.8 * 2. * time.delta_secs();
+
+                    // *accumulated_downward_velocity = 0.;
                 }
 
                 shape_cast_grounded.0 = false;
@@ -571,7 +578,7 @@ fn casting(
                     // no hit
                     slide_accumulation += new_direction;
                 }
-                continue 'inner;
+                break 'inner;
             };
 
             // println!("First hit: {:?}", first_hit);

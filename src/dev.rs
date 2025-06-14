@@ -1,27 +1,32 @@
 use bevy::{
-    input::common_conditions::input_just_pressed,
-    prelude::*, ui::UiDebugOptions,
+    input::common_conditions::{
+        input_just_pressed, input_toggle_active,
+    },
+    prelude::*,
+    ui::UiDebugOptions,
+};
+use bevy_inspector_egui::{
+    bevy_egui::EguiPlugin, quick::WorldInspectorPlugin,
 };
 
 pub struct DevToolsPlugin;
 
 impl Plugin for DevToolsPlugin {
     fn build(&self, app: &mut App) {
-        app
-            // .add_plugins(EguiPlugin {
-            //     enable_multipass_for_primary_context:
-            // true, })
-            // .add_plugins(
-            //     WorldInspectorPlugin::default().run_if(
-            //         input_toggle_active(true,
-            // KeyCode::Escape),     ),
-            // )
-            .add_systems(
-                Update,
-                toggle_debug_ui.run_if(input_just_pressed(
-                    KeyCode::Backquote,
-                )),
-            );
+        app.add_plugins(EguiPlugin {
+            enable_multipass_for_primary_context: true,
+        })
+        .add_plugins(
+            WorldInspectorPlugin::default().run_if(
+                input_toggle_active(true, KeyCode::Escape),
+            ),
+        )
+        .add_systems(
+            Update,
+            toggle_debug_ui.run_if(input_just_pressed(
+                KeyCode::Backquote,
+            )),
+        );
     }
 }
 
